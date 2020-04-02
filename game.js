@@ -52,7 +52,7 @@ class Quad {
 		this.objectMatrix = glMatrix.mat4.create();
 
 		glMatrix.mat4.translate(this.objectMatrix, this.objectMatrix, [pos[0], pos[1], pos[2]]);
-		glMatrix.mat4.scale(this.objectMatrix, this.objectMatrix, glMatrix.vec3.clone([2 * 1.0, 3 * 1.0, 0.0]));
+		glMatrix.mat4.scale(this.objectMatrix, this.objectMatrix, glMatrix.vec3.clone([1 * 1.0, 1.8 * 1.0, 0.0]));
 
 		gl.uniformMatrix4fv(this.transformLocation, false, this.objectMatrix);
 		gl.uniform4fv(this.colorLocation, color);
@@ -88,17 +88,17 @@ class Game {
 		const cameraMatrix = glMatrix.mat4.create();
 		// Camera Matrix to project Player to the screen
 		{
-			glMatrix.mat4.translate(cameraMatrix, cameraMatrix, [this.playerPos[0], this.playerPos[1], -20.0-this.playerPos[2]]);
+			glMatrix.mat4.translate(cameraMatrix, cameraMatrix, [this.playerPos[0], this.playerPos[1], -10.0-this.playerPos[2]]);
 		}
 		this.quad.setCamera(viewMatrix, cameraMatrix);
 		// glMatrix.vec3.add(this.playerPos, this.playerPos, [Math.random(), Math.random(), Math.random()])
 		
 		this.quad.renderColors(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), this.playerPos, cameraMatrix), 14, 14, 0.0, 0, this.whiteColor);
-		this.quad.renderColors(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), [1.0 * 3, 0.0, 0.0], cameraMatrix), 14, 14, 0.0, 0, [Math.random(), Math.random(), Math.random(), Math.random()]);
-		this.quad.renderColors(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), [2.0 * 3, 0.0, 0.0], cameraMatrix), 14, 14, 0.0, 0, [Math.random(), Math.random(), Math.random(), Math.random()]);
-		this.quad.renderColors(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), [3.0 * 3, 0.0, 0.0], cameraMatrix), 14, 14, 0.0, 0, [Math.random(), Math.random(), Math.random(), Math.random()]);
-		this.quad.renderColors(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), [4.0 * 3, 0.0, 0.0], cameraMatrix), 14, 14, 0.0, 0, [Math.random(), Math.random(), Math.random(), Math.random()]);
-		this.quad.renderColors(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), [5.0 * 3, 0.0, 0.0], cameraMatrix), 14, 14, 0.0, 0, [Math.random(), Math.random(), Math.random(), Math.random()]);
+		this.quad.renderColors(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), [1.0 * 1, 0.0, 0.0], cameraMatrix), 14, 14, 0.0, 0, [Math.random(), Math.random(), Math.random(), Math.random()]);
+		this.quad.renderColors(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), [2.0 * 1, 0.0, 0.0], cameraMatrix), 14, 14, 0.0, 0, [Math.random(), Math.random(), Math.random(), Math.random()]);
+		this.quad.renderColors(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), [3.0 * 1, 0.0, 0.0], cameraMatrix), 14, 14, 0.0, 0, [Math.random(), Math.random(), Math.random(), Math.random()]);
+		this.quad.renderColors(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), [4.0 * 1, 0.0, 0.0], cameraMatrix), 14, 14, 0.0, 0, [Math.random(), Math.random(), Math.random(), Math.random()]);
+		this.quad.renderColors(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), [5.0 * 1, 0.0, 0.0], cameraMatrix), 14, 14, 0.0, 0, [Math.random(), Math.random(), Math.random(), Math.random()]);
 		window.requestAnimationFrame(this.render);
 	}
 }
