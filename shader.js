@@ -36,8 +36,12 @@ attribute vec3 a_pos;
 uniform mat4 u_transform;
 uniform mat4 u_camera;
 uniform mat4 u_view;
+uniform mat4 u_texture;
+
+varying vec2 v_texCoord;
 
 void main() {
+	v_texCoord = (u_texture * vec4(a_pos, 1.0)).xy;
 	gl_Position = u_view * u_camera * u_transform * vec4(a_pos, 1.0);
 	// gl_Position = u_transform * vec4(a_pos, 1.0);
 }
@@ -46,8 +50,20 @@ export const fsCode = `
 precision highp float;
 
 uniform vec4 u_color;
+uniform sampler2D uSampler;
+
+varying vec2 v_texCoord;
 
 void main() {
-	gl_FragColor = vec4(u_color.xyz, 1.0);
+	vec4 col = texture2D(uSampler, v_texCoord);
+	if (col.a > 0.0) {
+		if (col.xyz != vec3(1.0, 0.0, 1.0))
+			gl_FragColor = col * u_color;
+		else
+			discard;
+	} else {
+		discard;
+	}
+	// gl_FragColor = vec4(u_color.xyz, 1.0);
 }
 `.slice(1);
