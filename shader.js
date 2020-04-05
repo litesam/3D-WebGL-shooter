@@ -44,7 +44,7 @@ varying float v_dist;
 void main() {
 	v_texCoord = (u_texture * vec4(a_pos, 1.0)).xy;
 	vec4 pos = u_view * u_camera * u_transform * vec4(a_pos, 1.0);
-	v_dist = pos.z / 2.0;
+	v_dist = pos.z / 1.5;
 	gl_Position = pos;
 }
 `.slice(1);
@@ -63,7 +63,7 @@ void main() {
 		float fog = 1.0 - v_dist;
 		fog = fog * fog * fog;
 		if (col.xyz != vec3(1.0, 0.0, 1.0))
-			gl_FragColor = vec4((col * u_color).xyz * fog * vec3(1.0, 1.0, 1.0), 1.0);
+			gl_FragColor = vec4((col * u_color).xyz * fog * vec3(0.8, 0.8, 0.8), 1.0);
 			// gl_FragColor = col * u_color;
 		else
 			discard;

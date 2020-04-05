@@ -6,24 +6,32 @@ let gl;
 
 class Game {
 	npc = [];
+	grasses = [];
 	keysdown = new Array(256).fill(false);
 	fov = 70;
 	playerPos = [0, -2.0, -0.7];
 	whiteColor = glMatrix.vec4.clone([1.0, 1.0, 1.0, 1.0]);
 	z = -3.0;
 	gun = [45.5, 42, 0, 31.5];
+	zScroll = this.z;
 	start = () => {
 		this.canvas = document.querySelector('#game');
 		gl = this.canvas.getContext('webgl');
 		this.sheetTexture = Texture.load('res/sheet.png', 256, 256);
+		this.groundTexture = Texture.load('res/ground.png', 256, 256);
 		this.quad = new Quad(new Shader(vsCode, fsCode));
 
-		for (let i = 0; i < 100; i++) {
+		for (let i = 0; i < 10000; i++) {
 			let x = (Math.random()*126);
 			x = (parseInt(x) % 2 == 0) ? x * -1.0 : x * 1.0;
 			this.npc.push([x, -3.0, (Math.random() * -512)]);
 		}
 		for (let i = 0; i < 100; i++) glMatrix.vec3.add(this.npc[i], this.npc[i], [-2.8, 0.0, -30.0]);
+		for (let i = 0; i < 1000; i++) {
+			let x = (Math.random()*126);
+			x = (parseInt(x) % 2 == 0) ? x * -1.0 : x * 1.0;	
+			this.grasses.push([x, 12.0, (Math.random() * -512)]);
+		}
 
 		window.addEventListener('keydown', this.onKeydown);
 		window.addEventListener('keyup', this.onKeyup);
@@ -69,6 +77,10 @@ class Game {
 		if (this.keysdown[32]) {
 			this.gun = [45.5, 42, 45, 31.5];
 		}
+		// if (this.z > -3.0 || this.playerPos[2] < -0.7) {
+		// 	this.z = -3.0;
+		// 	this.playerPos[2] = -0.7;
+		// }
 		if (this.playerPos[1] > -2.0) this.playerPos[1] = 0.0;
 		if (!this.keysdown[32]) 
 			this.gun = [45.5, 42, 0, 31.5];
@@ -95,12 +107,21 @@ class Game {
 		const screenMatrix = glMatrix.mat4.create();
 		glMatrix.mat4.scale(screenMatrix, screenMatrix, [scale, -scale, scale]);
 
+		this.quad.setCamera(viewMatrix, glMatrix.mat4.mul(glMatrix.mat4.create(), glMatrix.mat4.mul(glMatrix.mat4.create(), screenMatrix, cameraMatrix), floorCameraMatrix));
+		this.quad.setTexture(this.groundTexture);
+		this.quad.render(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), [-100.0, -15.0, 256.0], floorCameraMatrix), 256, 256, 0, 0, whiteColor);
+		this.quad.render(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), [-100.0, -15.0, 256.0 * 2], floorCameraMatrix), 256, 256, 0, 0, whiteColor);
+		this.quad.render(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), [-100.0, -15.0, 256.0 * 3], floorCameraMatrix), 256, 256, 0, 0, whiteColor);
+
 		this.quad.setCamera(viewMatrix, screenMatrix);
 		this.quad.setTexture(this.sheetTexture);
 		for (let i = 0; i < 100; i++) {
 			this.quad.render(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), this.npc[i], cameraMatrix), 14.5, 15.5, 16, 0, whiteColor);
 		}
 		this.quad.renderPlayer(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), [0, 1.0*0.5, this.z], cameraMatrix), this.gun[0], this.gun[1], this.gun[2], this.gun[3], whiteColor);
+		for (let i = 0; i < 1000; i++) {
+			this.quad.renderPlayer(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), this.grasses[i], cameraMatrix), 13.5, 12.5, 45, 0, whiteColor);
+		}
 	}
 }
 
