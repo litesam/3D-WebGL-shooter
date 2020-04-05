@@ -39,11 +39,13 @@ uniform mat4 u_view;
 uniform mat4 u_texture;
 
 varying vec2 v_texCoord;
+varying float v_dist;
 
 void main() {
 	v_texCoord = (u_texture * vec4(a_pos, 1.0)).xy;
-	gl_Position = u_view * u_camera * u_transform * vec4(a_pos, 1.0);
-	// gl_Position = u_transform * vec4(a_pos, 1.0);
+	vec4 pos = u_view * u_camera * u_transform * vec4(a_pos, 1.0);
+	v_dist = pos.z / 2.0;
+	gl_Position = pos;
 }
 `.slice(1);
 export const fsCode = `
@@ -53,17 +55,20 @@ uniform vec4 u_color;
 uniform sampler2D uSampler;
 
 varying vec2 v_texCoord;
+varying float v_dist;
 
 void main() {
 	vec4 col = texture2D(uSampler, v_texCoord);
 	if (col.a > 0.0) {
+		float fog = 1.0 - v_dist;
+		fog = fog * fog * fog;
 		if (col.xyz != vec3(1.0, 0.0, 1.0))
-			gl_FragColor = col * u_color;
+			gl_FragColor = vec4((col * u_color).xyz * fog * vec3(1.0, 1.0, 1.0), 1.0);
+			// gl_FragColor = col * u_color;
 		else
 			discard;
 	} else {
 		discard;
 	}
-	// gl_FragColor = vec4(u_color.xyz, 1.0);
 }
 `.slice(1);
