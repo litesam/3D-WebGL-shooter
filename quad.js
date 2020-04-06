@@ -70,7 +70,6 @@ class Quad {
 		glMatrix.mat4.scale(this.objectMatrix, this.objectMatrix, [2 * 1.0, 2 * 1.0, 0.0]);
 		gl.uniformMatrix4fv(this.transformLocation, false, this.objectMatrix);
 
-		// console.log(this.texture.width)
 		glMatrix.mat4.scale(this.textureMatrix, this.textureMatrix, [1.0 / this.texture.width, 1.0 / this.texture.height, 0.0]);
 		glMatrix.mat4.translate(this.textureMatrix, this.textureMatrix, [uo * 1.0, vo * 1.0, 0.0]);
 		glMatrix.mat4.scale(this.textureMatrix, this.textureMatrix, [w, h, 0.0]);
@@ -78,6 +77,23 @@ class Quad {
 
 		gl.uniform4fv(this.colorLocation, color);
 		gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
+	}
+
+	renderStringCopyrights = (pos, w, h, uo, vo, color) => {
+		this.objectMatrix = glMatrix.mat4.create();
+		this.textureMatrix = glMatrix.mat4.create();
+
+		glMatrix.mat4.translate(this.objectMatrix, this.objectMatrix, pos);
+		glMatrix.mat4.scale(this.objectMatrix, this.objectMatrix, [0.3, 0.3, 0.0]);
+		gl.uniformMatrix4fv(this.transformLocation, false, this.objectMatrix);
+
+		glMatrix.mat4.scale(this.textureMatrix, this.textureMatrix, [1.0 / this.texture.width, 1.0 / this.texture.height, 0.0]);
+		glMatrix.mat4.translate(this.textureMatrix, this.textureMatrix, [uo * 1.0, vo * 1.0, 0.0]);
+		glMatrix.mat4.scale(this.textureMatrix, this.textureMatrix, [w, h, 0.0]);
+		gl.uniformMatrix4fv(this.textureLocation, false, this.textureMatrix);
+
+		gl.uniform4fv(this.colorLocation, color);
+		gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);	
 	}
 
 	render = (pos, w, h, uo, vo, color) => {
