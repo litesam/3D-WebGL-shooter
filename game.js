@@ -14,6 +14,8 @@ const STATE_PLAY_GAME = 1;
 const STATE_WIN_GAME = 2;
 const STATE_LOSE_GAME = 3;
 
+let STATE_PLAY_LOG = 0;
+
 let gl;
 let referenceStr = `ABCDEFGHIJKLMNOPQRSTUVWXYZ     
 0123456789`;
@@ -31,7 +33,7 @@ class Game {
 	bigNpc = [14.5, 15.5, 32, 0]
 	zScroll = this.z
 	GAME_ENDS = -530
-	gameState = STATE_PLAY_GAME
+	gameState = STATE_TITLE_SCREEN
 	start = () => {
 		this.canvas = document.querySelector('#game');
 		gl = this.canvas.getContext('webgl');
@@ -99,6 +101,7 @@ class Game {
 		if (this.playerPos[1] > -2.0) this.playerPos[1] = 0.0;
 		if (!this.keysdown[32]) {
 			this.gun = [45.5, 42, 0, 31.5];
+			STATE_PLAY_LOG = 0;
 		}
 		if (this.keysdown[32]) {
 			this.gun = [45.5, 42, 45.4, 31.5];
@@ -106,12 +109,14 @@ class Game {
 		if (this.z <= this.GAME_ENDS - 20) {
 			this.z = this.GAME_ENDS - 20;
 			this.playerPos[2] = -this.GAME_ENDS + 20;
+			this.gameState = STATE_WIN_GAME;
 		}
-		for (let i = 0; i < 100; i++) {
+		for (let i = 0; i < this.npc.length; i++) {
 			if (this.npc[i][0] > -7 && this.npc[i][0] < 4) {
 				if (this.z < this.npc[i][2]) {
 					if (this.keysdown[32]) {
-						
+						STATE_PLAY_LOG = 1;
+						this.npc.splice(i, 1);
 					} else {
 						this.gameState = STATE_LOSE_GAME;
 						this.playerPos = [0, 2.0, -0.7];
@@ -135,9 +140,18 @@ class Game {
 		}
 	}
 
+	tickWinGame = () => {
+		if (this.keysdown[83]) {
+			this.playerPos = [0.0, -2.0, -0.7];
+			this.gameState = STATE_TITLE_SCREEN;
+			this.z = -3.0;
+		}
+	}
+
 	tick = (time) => {
 		if (this.gameState === STATE_PLAY_GAME) this.tickPlayGame();		
 		if (this.gameState === STATE_TITLE_SCREEN) this.tickTitleScreen();
+		if (this.gameState === STATE_WIN_GAME) this.tickWinGame();
 		if (this.gameState === STATE_LOSE_GAME) this.tickLoseGame();
 	}
 
@@ -178,7 +192,33 @@ class Game {
 
 		if (this.gameState === STATE_TITLE_SCREEN) this.renderTitleScreen();
 		if (this.gameState === STATE_PLAY_GAME) this.renderPlaygame();
+		if (this.gameState === STATE_WIN_GAME) this.renderWinGame();
 		if (this.gameState === STATE_LOSE_GAME) this.renderLoseGame();
+	}
+
+	renderWinGame = () => {
+		this.playerPos = [0, 2.0, -0.7]
+
+		const viewMatrix = glMatrix.mat4.create();
+		glMatrix.mat4.perspective(viewMatrix, this.fov * Math.PI / 180, this.canvas.width / this.canvas.height, 0.01, 2.0);
+
+		const cameraMatrix = glMatrix.mat4.create();
+		glMatrix.mat4.translate(cameraMatrix, cameraMatrix, [-this.playerPos[0]*0.5, 3.0-this.playerPos[1]*0.5, -7+this.playerPos[2]]);
+
+		const screenMatrix = glMatrix.mat4.create();
+		glMatrix.mat4.scale(screenMatrix, screenMatrix, [this.scale, -this.scale, this.scale]);
+
+		this.quad.setCamera(viewMatrix, screenMatrix);
+		this.quad.setTexture(this.miscTexture);
+		this.drawString('I AM', cameraMatrix, [80.8, 80.8, 80.8, 0.1], 3, -7.5, -3.0);
+		this.drawString('NEW TO', cameraMatrix, [80.8, 80.8, 80.8, 0.1], 3, -4.5, -3.0);
+		this.drawString('MAKING', cameraMatrix, [80.8, 80.8, 80.8, 0.1], 3, -1.5, -3.0);
+		this.drawString('GAMES', cameraMatrix, [80.8, 80.8, 80.8, 0.1], 3, 1.5, -3.0);
+		this.drawStringRights('PRESS S TO PLAY AGAIN', cameraMatrix, this.whiteColor, 0.5, 4.2, -3.0);
+		this.drawStringRights('CREATED BY SAM WITH HALF BAKED', cameraMatrix, this.whiteColor, 0.5, 4.6, -3.0);
+		this.drawStringRights('WEBGL KNOWLEDGE', cameraMatrix, this.whiteColor, 0.5, 5.0, -3.0);
+		this.quad.setTexture(this.sheetTexture);
+		this.quad.render(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), [-256, -10.0, -3.0], cameraMatrix), 256, 100, 0, 200, this.whiteColor);
 	}
 
 	renderLoseGame = () => {
@@ -248,12 +288,15 @@ class Game {
 
 		this.quad.setCamera(viewMatrix, screenMatrix);
 		this.quad.setTexture(this.sheetTexture);
-		for (let i = 0; i < 100; i++) {
+		for (let i = 0; i < this.npc.length; i++) {
 			if (this.npc[i][0] > -7 && this.npc[i][0] < 4) {
 				this.quad.render(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), this.npc[i], cameraMatrix), this.npcsAnim[0], this.npcsAnim[1], 32, 0, this.whiteColor);
 			} else {
 				this.quad.render(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), this.npc[i], cameraMatrix), this.npcsAnim[0], this.npcsAnim[1], this.npcsAnim[2], this.npcsAnim[3], this.whiteColor);
 			}
+		}
+		if (STATE_PLAY_LOG) {
+			this.quad.renderPlayer(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), [0, -2.5, this.z], cameraMatrix), 14.5, 15.5, 75, 0, this.whiteColor);
 		}
 		this.quad.renderPlayer(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), [0, -0.5, this.z], cameraMatrix), this.gun[0], this.gun[1], this.gun[2], this.gun[3], this.whiteColor);
 		for (let i = 0; i < 1000; i++) {
