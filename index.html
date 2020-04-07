@@ -8,6 +8,13 @@
 			box-sizing: border-box;
 			background-color: #555;
 		}
+		div {
+			font-family: arial;
+			position: absolute;
+			left: 30%;
+			font-size: 40px;
+			color: #fff;
+		}
 		#game {
 			display: block;
 			image-rendering: pixelated;
@@ -17,6 +24,7 @@
 	</style>
 </head>
 <body>
+	<div>Press Spacebar to cut down Zombies</div>
 	<canvas width="854" height="480" id="game"></canvas>
 	<script type="text/javascript" src="gl-matrix.js"></script>
 	<script type="module" src="game.js"></script>

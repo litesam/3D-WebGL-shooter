@@ -149,6 +149,12 @@ class Game {
 	}
 
 	tick = (time) => {
+		if (this.gameState !== STATE_TITLE_SCREEN) {
+			if (document.querySelector('div')) {
+				const instructions = document.querySelector('div')
+				instructions.parentNode.removeChild(instructions);
+			}
+		}
 		if (this.gameState === STATE_PLAY_GAME) this.tickPlayGame();		
 		if (this.gameState === STATE_TITLE_SCREEN) this.tickTitleScreen();
 		if (this.gameState === STATE_WIN_GAME) this.tickWinGame();
