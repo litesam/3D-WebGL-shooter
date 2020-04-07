@@ -11,6 +11,7 @@ class Quad {
 		this.viewLocation = gl.getUniformLocation(this.shader.program, 'u_view');
 		this.colorLocation = gl.getUniformLocation(this.shader.program, 'u_color');
 		this.textureLocation = gl.getUniformLocation(this.shader.program, 'u_texture');
+		this.skyColorLocation = gl.getUniformLocation(this.shader.program, 'u_skyColor');
 
 		const vertexData = new Float32Array(12);
 		vertexData.set([0.0, 0.0, 0.0], 0);
@@ -49,7 +50,7 @@ class Quad {
 		this.textureMatrix = glMatrix.mat4.create();
 
 		glMatrix.mat4.translate(this.objectMatrix, this.objectMatrix, pos);
-		glMatrix.mat4.scale(this.objectMatrix, this.objectMatrix, [3 * 1.0, 3 * 1.0, 0.0]);
+		glMatrix.mat4.scale(this.objectMatrix, this.objectMatrix, [4 * 1.0, 4 * 1.0, 0.0]);
 		gl.uniformMatrix4fv(this.transformLocation, false, this.objectMatrix);
 
 		// console.log(this.texture.width)

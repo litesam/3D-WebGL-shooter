@@ -31,7 +31,7 @@ class Game {
 	bigNpc = [14.5, 15.5, 32, 0]
 	zScroll = this.z
 	GAME_ENDS = -530
-	gameState = STATE_TITLE_SCREEN
+	gameState = STATE_PLAY_GAME
 	start = () => {
 		this.canvas = document.querySelector('#game');
 		gl = this.canvas.getContext('webgl');
@@ -49,7 +49,7 @@ class Game {
 		for (let i = 0; i < 1000; i++) {
 			let x = (Math.random()*126);
 			x = (parseInt(x) % 2 == 0) ? x * -1.0 : x * 1.0;	
-			this.grasses.push([x, 12.0, (Math.random() * this.GAME_ENDS)]);
+			this.grasses.push([x, 10.0, (Math.random() * this.GAME_ENDS)]);
 		}
 
 		window.addEventListener('keydown', this.onKeydown);
@@ -92,25 +92,30 @@ class Game {
 		let speed = 0.6;
 		this.playerPos[2] += speed;
 		this.z -= speed;
-		if (this.keysdown[32]) {
-			this.gun = [45.5, 42, 45, 31.5];
-		}
 		if (this.z > -3.0 || this.playerPos[2] < -0.7) {
 			this.z = -3.0;
 			this.playerPos[2] = -0.7;
 		}
 		if (this.playerPos[1] > -2.0) this.playerPos[1] = 0.0;
-		if (!this.keysdown[32]) 
+		if (!this.keysdown[32]) {
 			this.gun = [45.5, 42, 0, 31.5];
+		}
+		if (this.keysdown[32]) {
+			this.gun = [45.5, 42, 45.4, 31.5];
+		}
 		if (this.z <= this.GAME_ENDS - 20) {
 			this.z = this.GAME_ENDS - 20;
 			this.playerPos[2] = -this.GAME_ENDS + 20;
 		}
 		for (let i = 0; i < 100; i++) {
-			if (this.npc[i][0] > -10 && this.npc[i][0] < 7) {
+			if (this.npc[i][0] > -7 && this.npc[i][0] < 4) {
 				if (this.z < this.npc[i][2]) {
-					this.gameState = STATE_LOSE_GAME;
-					this.playerPos = [0, 2.0, -0.7];
+					if (this.keysdown[32]) {
+						
+					} else {
+						this.gameState = STATE_LOSE_GAME;
+						this.playerPos = [0, 2.0, -0.7];
+					}
 				}
 			}
 		}
@@ -144,7 +149,6 @@ class Game {
 			let vo = 24;
 			if (index > 25) {
 				vo = vo + 8.1;
-				// uo -= 8;
 			}
 			this.quad.renderString(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), [x * (i + 1) / 1.6, y, z], cameraMatrix), 8, 8, 8 * uo, vo, color);
 		}
@@ -245,13 +249,13 @@ class Game {
 		this.quad.setCamera(viewMatrix, screenMatrix);
 		this.quad.setTexture(this.sheetTexture);
 		for (let i = 0; i < 100; i++) {
-			if (this.npc[i][0] > -10 && this.npc[i][0] < 10) {
+			if (this.npc[i][0] > -7 && this.npc[i][0] < 4) {
 				this.quad.render(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), this.npc[i], cameraMatrix), this.npcsAnim[0], this.npcsAnim[1], 32, 0, this.whiteColor);
 			} else {
 				this.quad.render(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), this.npc[i], cameraMatrix), this.npcsAnim[0], this.npcsAnim[1], this.npcsAnim[2], this.npcsAnim[3], this.whiteColor);
 			}
 		}
-		this.quad.renderPlayer(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), [0, 1.0*0.5, this.z], cameraMatrix), this.gun[0], this.gun[1], this.gun[2], this.gun[3], this.whiteColor);
+		this.quad.renderPlayer(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), [0, -0.5, this.z], cameraMatrix), this.gun[0], this.gun[1], this.gun[2], this.gun[3], this.whiteColor);
 		for (let i = 0; i < 1000; i++) {
 			this.quad.renderPlayer(glMatrix.vec3.transformMat4(glMatrix.vec3.create(), this.grasses[i], cameraMatrix), 13.5, 12.5, 45, 0, this.whiteColor);
 		}
