@@ -2,6 +2,13 @@ import { Shader, vsCode, fsCode } from './shader.js';
 import { Texture } from './texture.js';
 import { Quad } from './quad.js';
 
+window.onload = function () {
+	if (!window.location.hash) {
+		window.location = window.location + '#loaded';
+		window.location.reload();
+	}
+}
+
 const STATE_TITLE_SCREEN = 0;
 const STATE_PLAY_GAME = 1;
 const STATE_WIN_GAME = 2;
