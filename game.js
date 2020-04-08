@@ -70,18 +70,9 @@ class Game {
 		this.keysdown[e.keyCode] = false;
 	}
 
-	lastTime = Date.now();
-	unprocessedFrames = 0.0
 	animate = (time = 0) => {
-		let now = Date.now();
-		this.unprocessedFrames += (now - this.lastTime) * 60.0 / 1000.0;
-		if (this.unprocessedFrames > 10.0) this.unprocessedFrames = 10.0;
-		this.lastTime = now;
-		while (this.unprocessedFrames > 1.0) {
-			this.tick(time);
-			this.unprocessedFrames -= 1.0;
-		}
-			this.render(this.unprocessedFrames);
+		this.tick(time);
+		this.render(this.unprocessedFrames);
 		window.requestAnimationFrame(this.animate);
 	}
 
