@@ -23,16 +23,18 @@ class Quad {
 		indexData.set([0, 1, 2, 0, 2, 3], 0);
 
 		gl.useProgram(this.shader.program);
-		gl.enableVertexAttribArray(this.posLocation);
 
 		const vertexBuffer = gl.createBuffer();
+		const vao = gl.createVertexArray();
+		gl.bindVertexArray(vao);
 		gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+		gl.enableVertexAttribArray(this.posLocation);
 		gl.bufferData(gl.ARRAY_BUFFER, vertexData, gl.STATIC_DRAW);
-		gl.vertexAttribPointer(this.posLocation, 3, gl.FLOAT, false, 0, 0);
 
 		const indexBuffer = gl.createBuffer();
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
+		gl.vertexAttribPointer(this.posLocation, 3, gl.FLOAT, false, 0, 0);
 	}
 
 	setTexture = (texture) => {

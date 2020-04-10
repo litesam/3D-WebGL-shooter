@@ -36,7 +36,7 @@ class Game {
 	gameState = STATE_TITLE_SCREEN
 	start = () => {
 		this.canvas = document.querySelector('#game');
-		gl = this.canvas.getContext('webgl');
+		gl = this.canvas.getContext('webgl2');
 		this.sheetTexture = Texture.load('res/sheet.png', 256, 256);
 		this.groundTexture = Texture.load('res/ground.png', 256, 256);
 		this.miscTexture = Texture.load('res/misc.png', 256, 256);
